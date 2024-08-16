@@ -6,7 +6,10 @@
 npm i express
 ```
 
-
+- Install JOI 
+```bash
+npm install joi
+```
 
 ## Importing a File
 
