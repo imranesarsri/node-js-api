@@ -2,8 +2,8 @@ const express = require('express')
 const authors = require('../data/authors.json')
 const validationCreateAuthor = require('../validation/authors/validationCreateAuthor')
 const validationUpdateAuthor = require('../validation/authors/validationUpdateAuthor')
+const { Author } = require('../Models/Author')
 const router = express.Router()
-
 
 /** 
  * @desc Get all authors
@@ -12,8 +12,16 @@ const router = express.Router()
  * @access public
  */
 
-router.get('/', (req, res) => {
-    res.json(authors)
+router.get('/', async (req, res) => {
+    try {
+        const allAuthor = await Author.find().sort({ firstName: -1 }).select('firstName lastName')
+        // const allAuthor = await Author.find().sort({ firstName: 1 }).select(' -image -_id')
+        res.status(200).json(allAuthor)
+
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+
 })
 
 
@@ -24,12 +32,16 @@ router.get('/', (req, res) => {
  * @access public
  */
 
-router.get('/:id', (req, res) => {
-    const author = authors.find(b => b.id === parseInt(req.params.id))
-    if (author) {
-        res.status(200).json(author)
-    } else {
-        res.status(404).json({ message: 'author not found' })
+router.get('/:id', async (req, res) => {
+    try {
+        const getAuthorByID = await Author.findById(req.params.id)
+        if (getAuthorByID) {
+            res.status(200).json(getAuthorByID)
+        } else {
+            res.status(404).json({ message: 'author not found' })
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
 })
 
@@ -41,12 +53,20 @@ router.get('/:id', (req, res) => {
  * @access public
  */
 
-router.post('/create', (req, res) => {
+router.post('/create', async (req, res) => {
     const { error } = validationCreateAuthor(req.body)
     if (error) {
         res.status(400).json({ message: error.message })
     } else {
-        res.status(201).json({ message: 'created successfull' })
+
+        try {
+            const author = new Author(req.body)
+            await author.save()
+            res.status(201).json({ message: 'created successfull' })
+
+        } catch (error) {
+            res.status(500).json({ message: error.message })
+        }
     }
 })
 
@@ -58,18 +78,29 @@ router.post('/create', (req, res) => {
  * @access public
  */
 
-router.put('/update/:id', (req, res) => {
-    const author = authors.find(b => b.id == parseInt(req.params.id))
-    if (author) {
-        const { error } = validationUpdateAuthor(req.body)
-        if (error) {
-            res.status(400).json({ message: error.message })
-        } else {
-            res.status(201).json({ message: 'Updated successfull' })
-        }
-    } else {
-        res.status(404).json({ message: 'The author you are trying to edit does not exist.' })
+router.put('/update/:id', async (req, res) => {
+    const { error } = validationUpdateAuthor(req.body)
+    if (error) {
+        res.status(400).json({ message: error.message })
     }
+
+    try {
+        const author = await Author.findByIdAndUpdate(req.params.id, {
+            $set: {
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                nationality: req.body.nationality,
+                age: req.body.age,
+                image: req.body.image,
+            }
+        }, { new: true })
+        if (author) {
+            res.status(200).json(author)
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+
 })
 
 
@@ -81,12 +112,18 @@ router.put('/update/:id', (req, res) => {
  * @access public
  */
 
-router.delete('/delete/:id', (req, res) => {
-    const author = authors.find(b => b.id == parseInt(req.params.id))
-    if (author) {
-        res.status(201).json({ message: 'deleted successfull' })
-    } else {
-        res.status(404).json({ message: 'The author you are trying to delet does not exist.' })
+router.delete('/delete/:id', async (req, res) => {
+    try {
+        const ID = req.params.id
+        const author = await Author.findById(ID)
+        if (author) {
+            await Author.findByIdAndDelete(ID)
+            res.status(200).json({ message: 'deleted successfull' })
+        } else {
+            res.status(404).json({ message: 'Author not found' })
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message })
     }
 })
 

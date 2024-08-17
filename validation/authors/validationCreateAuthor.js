@@ -6,8 +6,8 @@ function validationCreateAuthor(obj) {
         firstName: Joi.string().trim().min(3).max(30).required(),
         lastName: Joi.string().trim().min(3).max(30).required(),
         nationality: Joi.string().trim().min(3).max(300),
-        age: Joi.number().min(16).required(),
-        image: Joi.string().trim().min(3).max(300).required(),
+        age: Joi.number().min(16).max(99).required(),
+        image: Joi.string(),
     })
     return schema.validate(obj)
 }

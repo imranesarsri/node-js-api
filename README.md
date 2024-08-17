@@ -17,6 +17,11 @@ npm install joi
 npm i mongoose
 ```
 
+- express-async-handler
+```bash
+
+```
+
 ___
 
 ## Importing a File
