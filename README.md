@@ -1,15 +1,23 @@
 # Node js API
 
-- Install Express js
+## Install packages
 
+- Install **Express js**
 ```bash
 npm i express
 ```
 
-- Install JOI 
+- Install **JOI** 
 ```bash
 npm install joi
 ```
+
+- Install Mongoose
+```bash
+npm i mongoose
+```
+
+___
 
 ## Importing a File
 
