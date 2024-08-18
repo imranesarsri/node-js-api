@@ -22,6 +22,11 @@ npm i mongoose
 npm install --save express-async-handler
 ```
 
+- Install dotenv
+```bash
+npm i dotenv
+```
+
 ___
 
 ## Importing a File

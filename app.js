@@ -2,13 +2,16 @@ const express = require('express')
 const routerBooks = require('./router/books')
 const routerAuthors = require('./router/authors')
 const connectDB = require('./db/connect')
+const dotenv = require('dotenv')
+dotenv.config()
+
 
 // Connected to database
 connectDB().then(() => {
     // Running the server
-    const PORT = 8000
+    const PORT = process.env.PORT || 8000
     app.listen(PORT, () => {
-        console.log(`WELCOME TO PORT: ${PORT}`)
+        console.log(`SERVER is running in ${process.env.NODE_ENV} mode on port: ${PORT}`)
     })
 }).catch(error => {
     console.error(`Failed to connect to the database: ${error}`);

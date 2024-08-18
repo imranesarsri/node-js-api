@@ -1,96 +1,118 @@
 const express = require('express')
-const books = require('../data/books.json')
 const validationCreateBook = require('../validation/books/validationCreateBook')
 const validationUpdateBook = require('../validation/books/validationUpdateBook')
+const { Book } = require('../Models/Book')
 const router = express.Router()
-
+const asyncHandler = require('express-async-handler')
 
 /** 
- * @desc Get all books
- * @route /books
+ * @desc Get all Books
+ * @route /Books
  * @method GET 
  * @access public
  */
 
-router.get('/', (req, res) => {
-    res.json(books)
-})
+router.get('/', asyncHandler(
+    async (req, res) => {
+        const allBook = await Book.find().sort({ title: 1 }).populate("author", ['_id', 'firstName', 'lastName'])
+        res.status(200).json(allBook)
+    }
+))
 
 
 /** 
- * @desc Get book by id
+ * @desc Get Book by id
  * @route /:id
  * @method GET 
  * @access public
  */
 
-router.get('/:id', (req, res) => {
-    const book = books.find(b => b.id === parseInt(req.params.id))
-    if (book) {
-        res.status(200).json(book)
-    } else {
-        res.status(404).json({ message: 'book not found' })
+router.get('/:id', asyncHandler(
+    async (req, res) => {
+        const ID = req.params.id
+        const getBookByID = await Book.findById(ID)
+        if (getBookByID) {
+            res.status(200).json(getBookByID)
+        } else {
+            res.status(404).json({ message: 'Book not found' })
+        }
     }
-})
+))
 
 
 /** 
- * @desc Greate new book
+ * @desc Greate new Book
  * @route /create
  * @method GET 
  * @access public
  */
 
-router.post('/create', (req, res) => {
-    const { error } = validationCreateBook(req.body)
-    if (error) {
-        res.status(400).json({ message: error.message })
-    } else {
-        res.status(201).json({ message: 'created successfull' })
+router.post('/create', asyncHandler(
+    async (req, res) => {
+        const { error } = validationCreateBook(req.body)
+        if (error) {
+            res.status(400).json({ message: error.details[0].message })
+        } else {
+            const book = new Book(req.body)
+            await book.save()
+            res.status(201).json({ message: 'created successfull' })
+        }
     }
-})
+))
 
 
 /** 
- * @desc Update a book by id
+ * @desc Update a Book by id
  * @route /update/:id
  * @method PUT 
  * @access public
  */
 
-router.put('/update/:id', (req, res) => {
-    const book = books.find(b => b.id == parseInt(req.params.id))
-    if (book) {
+router.put('/update/:id', asyncHandler(
+    async (req, res) => {
         const { error } = validationUpdateBook(req.body)
         if (error) {
             res.status(400).json({ message: error.message })
-        } else {
-            res.status(201).json({ message: 'Updated successfull' })
         }
-    } else {
-        res.status(404).json({ message: 'The book you are trying to edit does not exist.' })
+
+        const ID = req.params.id
+        const book = await Book.findByIdAndUpdate(ID, {
+            $set: {
+                title: req.body.title,
+                author: req.body.author,
+                description: req.body.description,
+                price: req.body.price,
+                cover: req.body.cover,
+            }
+        }, { new: true })
+        if (book) {
+            res.status(200).json(book)
+        }
+
     }
-})
+))
 
 
 
 /** 
- * @desc Delete a book by id
+ * @desc Delete a Book by id
  * @route /delete/:id
  * @method DELETE 
  * @access public
  */
 
-router.delete('/delete/:id', (req, res) => {
-    const book = books.find(b => b.id == parseInt(req.params.id))
-    if (book) {
-        res.status(201).json({ message: 'deleted successfull' })
-    } else {
-        res.status(404).json({ message: 'The book you are trying to delet does not exist.' })
+router.delete('/delete/:id', asyncHandler(
+    async (req, res) => {
+        const ID = req.params.id
+        const book = await Book.findById(ID)
+        if (book) {
+            await Book.findByIdAndDelete(ID)
+            res.status(200).json({ message: 'deleted successfull' })
+        } else {
+            res.status(404).json({ message: 'Book not found' })
+        }
     }
-})
-
-
+))
 
 module.exports = router
 

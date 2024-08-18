@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
+const dotenv = require('dotenv')
+dotenv.config()
 
 const connectDB = async () => {
     try {
         await mongoose
-            .connect('mongodb://127.0.0.1/bookStore')
+            .connect(process.env.MONGO_URL)
         console.log('CONNECTED TO DATABASE IS SECCESSFULL...');
     } catch (error) {
         console.error(`ERROR TRYING CONNECT TO DATABASE: ${error}`);
