@@ -19,7 +19,7 @@ npm i mongoose
 
 - express-async-handler
 ```bash
-
+npm install --save express-async-handler
 ```
 
 ___
