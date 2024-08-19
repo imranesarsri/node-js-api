@@ -1,7 +1,5 @@
 const express = require('express')
-const validationCreateAuthor = require('../validation/authors/validationCreateAuthor')
-const validationUpdateAuthor = require('../validation/authors/validationUpdateAuthor')
-const { Author } = require('../Models/Author')
+const { Author, validationCreateAuthor, validationUpdateAuthor } = require('../Models/Author')
 const router = express.Router()
 const asyncHandler = require('express-async-handler')
 

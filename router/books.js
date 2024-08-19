@@ -1,7 +1,5 @@
 const express = require('express')
-const validationCreateBook = require('../validation/books/validationCreateBook')
-const validationUpdateBook = require('../validation/books/validationUpdateBook')
-const { Book } = require('../Models/Book')
+const { Book, validationCreateBook, validationUpdateBook } = require('../Models/Book')
 const router = express.Router()
 const asyncHandler = require('express-async-handler')
 

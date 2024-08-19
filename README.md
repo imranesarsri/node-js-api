@@ -27,6 +27,16 @@ npm install --save express-async-handler
 npm i dotenv
 ```
 
+- Install bcryptjs *Hash oassword*
+```bash
+npm i bcryptjs
+```
+
+- npm i jsonwebtoken
+```bash
+npm i jsonwebtoken
+```
+
 ___
 
 ## Importing a File

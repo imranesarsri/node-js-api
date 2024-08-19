@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Joi = require('joi');
 
 const BookSchema = mongoose.Schema({
     title: {
@@ -35,6 +36,31 @@ const BookSchema = mongoose.Schema({
 
 const Book = mongoose.model('Book', BookSchema)
 
+
+function validationCreateBook(obj) {
+    const schema = Joi.object({
+        title: Joi.string().trim().min(3).max(250).required(),
+        author: Joi.string().required(),
+        description: Joi.string().trim().min(5).max(500),
+        price: Joi.number().min(0).required(),
+        cover: Joi.string().valid("soft cover", "hard cover").required(),
+    })
+    return schema.validate(obj)
+}
+
+function validationUpdateBook(obj) {
+    const schema = Joi.object({
+        title: Joi.string().trim().min(3).max(250),
+        author: Joi.string(),
+        description: Joi.string().trim().min(5).max(500),
+        price: Joi.number().min(0),
+        cover: Joi.string().valid("soft cover", "hard cover"),
+    })
+    return schema.validate(obj)
+}
+
 module.exports = {
-    Book
+    Book,
+    validationCreateBook,
+    validationUpdateBook
 }
