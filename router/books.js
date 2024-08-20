@@ -20,7 +20,7 @@ router.get('/', asyncHandler(
 
 /** 
  * @desc Get Book by id
- * @route /:id
+ * @route /books/:id
  * @method GET 
  * @access public
  */
@@ -40,7 +40,7 @@ router.get('/:id', asyncHandler(
 
 /** 
  * @desc Greate new Book
- * @route /create
+ * @route /books/create
  * @method GET 
  * @access public
  */
@@ -61,7 +61,7 @@ router.post('/create', asyncHandler(
 
 /** 
  * @desc Update a Book by id
- * @route /update/:id
+ * @route /books/update/:id
  * @method PUT 
  * @access public
  */
@@ -94,7 +94,7 @@ router.put('/update/:id', asyncHandler(
 
 /** 
  * @desc Delete a Book by id
- * @route /delete/:id
+ * @route /books/delete/:id
  * @method DELETE 
  * @access public
  */

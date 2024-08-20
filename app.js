@@ -2,6 +2,7 @@ const express = require('express')
 const routerBooks = require('./router/books')
 const routerAuthors = require('./router/authors')
 const routerAuth = require('./router/auth')
+const routerUsers = require('./router/users')
 const connectDB = require('./db/connect')
 const dotenv = require('dotenv')
 dotenv.config()
@@ -28,7 +29,7 @@ const app = express()
 // Apply Middlewres
 app.use(express.json())
 
-app.use(logger)
+// app.use(logger)
 
 //? Error Handler
 // app.use(notFound)
@@ -38,5 +39,6 @@ app.use(logger)
 app.use('/books', routerBooks)
 app.use('/authors', routerAuthors)
 app.use('/auth', routerAuth)
+app.use('/users', routerUsers)
 
 

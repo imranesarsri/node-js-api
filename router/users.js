@@ -1,74 +1,43 @@
-const express = require('express')
-const { User, validationRegisterUser, validationLoginUser } = require('../Models/User')
-const router = express.Router()
-const asyncHandler = require('express-async-handler')
+const express = require('express');
+const { User, validationUpdateUser } = require('../Models/User');
+const router = express.Router();
+const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken')
-
-
-/** 
- * @desc Register new user
- * @route /register
- * @method POST 
- * @access public
- */
-
-router.post('/register', asyncHandler(
-    async (req, res) => {
-        const { error } = validationRegisterUser(req.body)
-        if (error) {
-            res.status(400).json({ message: error.message })
-        }
-
-        const user = await User.findOne({ email: req.body.email })
-        if (user) {
-            res.status(400).json({ message: 'The user is already registered' })
-        }
-
-        const salt = await bcrypt.genSalt(10)
-        req.body.password = await bcrypt.hash(req.body.password, salt)
-
-        const newUser = new User(req.body)
-        const result = await newUser.save()
-
-        const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET_KEY)
-        const { password, ...other } = result._doc;
-
-        res.status(201).json({ ...other, token })
-    }
-))
-
-
+const { verifyToken } = require('../middlewares/verifyToken');
 
 /** 
- * @desc Login user
- * @route /login
- * @method POST 
- * @access public
+ * @desc Update user
+ * @route /users/update/:id
+ * @method PUT 
+ * @access Private
  */
+router.put('/update/:id', verifyToken, asyncHandler(async (req, res) => {
 
-router.post('/login', asyncHandler(
-    async (req, res) => {
-        const { error } = validationLoginUser(req.body)
-        if (error) {
-            res.status(400).json({ message: error.message })
-        }
-
-        const user = await User.findOne({ email: req.body.email })
-        if (!user) {
-            res.status(400).json({ message: 'Invalid email or password' })
-        }
-
-        const isPasswordMatch = await bcrypt.compare(req.body.password, user.password)
-        if (!isPasswordMatch) {
-            res.status(400).json({ message: 'Invalid email or password' })
-        }
-
-        const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET_KEY)
-        const { password, ...other } = user._doc;
-
-        res.status(201).json({ ...other, token })
+    if (req.user.id !== req.params.id) { // Use `req.user.id` instead of `req.user._id`
+        return res.status(401).json({ message: 'You are not allowed to update this profile' });
     }
-))
 
-module.exports = router
+    const { error } = validationUpdateUser(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.message });
+    }
+
+    if (req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        req.body.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    const userUpdate = await User.findByIdAndUpdate(req.params.id, {
+        $set: {
+            userName: req.body.userName,
+            email: req.body.email,
+            password: req.body.password,
+        }
+    }, {
+        new: true,
+    }).select('-password');
+
+    res.status(200).json(userUpdate);
+}));
+
+module.exports = router;

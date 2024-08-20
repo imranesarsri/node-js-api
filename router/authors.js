@@ -5,7 +5,7 @@ const asyncHandler = require('express-async-handler')
 
 /** 
  * @desc Get all authors
- * @route /authors
+ * @route /authors/authors
  * @method GET 
  * @access public
  */
@@ -20,7 +20,7 @@ router.get('/', asyncHandler(
 
 /** 
  * @desc Get author by id
- * @route /:id
+ * @route /authors/:id
  * @method GET 
  * @access public
  */
@@ -40,7 +40,7 @@ router.get('/:id', asyncHandler(
 
 /** 
  * @desc Greate new author
- * @route /create
+ * @route /authors/create
  * @method GET 
  * @access public
  */
@@ -61,7 +61,7 @@ router.post('/create', asyncHandler(
 
 /** 
  * @desc Update a author by id
- * @route /update/:id
+ * @route /authors/update/:id
  * @method PUT 
  * @access public
  */
@@ -94,7 +94,7 @@ router.put('/update/:id', asyncHandler(
 
 /** 
  * @desc Delete a author by id
- * @route /delete/:id
+ * @route /authors/delete/:id
  * @method DELETE 
  * @access public
  */
