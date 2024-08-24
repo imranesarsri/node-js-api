@@ -3,7 +3,6 @@ const { User, validationRegisterUser, validationLoginUser } = require('../Models
 const router = express.Router()
 const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken')
 
 
 /** 
@@ -30,7 +29,7 @@ router.post('/register', asyncHandler(async (req, res) => {
     const newUser = new User(req.body);
     const result = await newUser.save();
 
-    const token = jwt.sign({ id: result._id, isAdmin: result.isAdmin }, process.env.JWT_SECRET_KEY); // Changed `user._id` to `result._id`
+    const token = newUser.generateToken()
     const { password, ...other } = result._doc;
 
     res.status(201).json({ ...other, token });
@@ -63,7 +62,7 @@ router.post('/login', asyncHandler(
             res.status(400).json({ message: 'Invalid email or password' })
         }
 
-        const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET_KEY)
+        const token = user.generateToken()
         const { password, ...other } = user._doc;
 
         res.status(201).json({ ...other, token })

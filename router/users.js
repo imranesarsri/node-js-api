@@ -3,7 +3,7 @@ const { User, validationUpdateUser } = require('../Models/User');
 const router = express.Router();
 const asyncHandler = require('express-async-handler');
 const bcrypt = require('bcryptjs');
-const { verifyToken } = require('../middlewares/verifyToken');
+const { verifyTokenAndAuthorization, verifyTokenAndAdmin } = require('../middlewares/verifyToken');
 
 /** 
  * @desc Update user
@@ -11,11 +11,24 @@ const { verifyToken } = require('../middlewares/verifyToken');
  * @method PUT 
  * @access Private
  */
-router.put('/update/:id', verifyToken, asyncHandler(async (req, res) => {
 
-    if (req.user.id !== req.params.id) { // Use `req.user.id` instead of `req.user._id`
-        return res.status(401).json({ message: 'You are not allowed to update this profile' });
+router.get('/', verifyTokenAndAdmin, asyncHandler(
+    async (req, res) => {
+        const allUsers = await User.find().sort({ title: 1 }).select('-password -isAdmin')
+        res.status(200).json(allUsers)
     }
+))
+
+
+/** 
+ * @desc Update user
+ * @route /users/update/:id
+ * @method PUT 
+ * @access private
+ */
+
+router.put('/update/:id', verifyTokenAndAuthorization, asyncHandler(async (req, res) => {
+
 
     const { error } = validationUpdateUser(req.body);
     if (error) {
@@ -39,5 +52,28 @@ router.put('/update/:id', verifyToken, asyncHandler(async (req, res) => {
 
     res.status(200).json(userUpdate);
 }));
+
+
+/** 
+ * @desc Update user
+ * @route /users/update/:id
+ * @method PUT 
+ * @access private
+ */
+
+router.delete('/delete/:id', verifyTokenAndAuthorization, asyncHandler(
+    async (req, res) => {
+        const ID = req.params.id
+        const user = await User.findById(ID)
+        if (user) {
+            await User.findByIdAndDelete(user)
+            return res.status(200).json({ message: "Deleted successfull" });
+        } else {
+            return res.status(404).json({ message: error.message });
+
+        }
+    }
+))
+
 
 module.exports = router;

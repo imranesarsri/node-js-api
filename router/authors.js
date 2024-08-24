@@ -2,6 +2,8 @@ const express = require('express')
 const { Author, validationCreateAuthor, validationUpdateAuthor } = require('../Models/Author')
 const router = express.Router()
 const asyncHandler = require('express-async-handler')
+const { verifyTokenAndAdmin } = require('../middlewares/verifyToken');
+
 
 /** 
  * @desc Get all authors
@@ -42,53 +44,56 @@ router.get('/:id', asyncHandler(
  * @desc Greate new author
  * @route /authors/create
  * @method GET 
- * @access public
+ * @access private (only admin)
  */
 
-router.post('/create', asyncHandler(
-    async (req, res) => {
-        const { error } = validationCreateAuthor(req.body)
-        if (error) {
-            res.status(400).json({ message: error.message })
-        } else {
-            const author = new Author(req.body)
-            await author.save()
-            res.status(201).json({ message: 'created successfull' })
+router.post('/create',
+    verifyTokenAndAdmin,
+    asyncHandler(
+        async (req, res) => {
+            const { error } = validationCreateAuthor(req.body)
+            if (error) {
+                res.status(400).json({ message: error.message })
+            } else {
+                const author = new Author(req.body)
+                await author.save()
+                res.status(201).json(author)
+            }
         }
-    }
-))
+    ))
 
 
 /** 
  * @desc Update a author by id
  * @route /authors/update/:id
  * @method PUT 
- * @access public
+ * @access private (only admin) 
  */
 
-router.put('/update/:id', asyncHandler(
-    async (req, res) => {
-        const { error } = validationUpdateAuthor(req.body)
-        if (error) {
-            res.status(400).json({ message: error.message })
-        }
-
-        const ID = req.params.id
-        const author = await Author.findByIdAndUpdate(ID, {
-            $set: {
-                firstName: req.body.firstName,
-                lastName: req.body.lastName,
-                nationality: req.body.nationality,
-                age: req.body.age,
-                image: req.body.image,
+router.put('/update/:id',
+    verifyTokenAndAdmin,
+    asyncHandler(
+        async (req, res) => {
+            const { error } = validationUpdateAuthor(req.body)
+            if (error) {
+                res.status(400).json({ message: error.message })
             }
-        }, { new: true })
-        if (author) {
-            res.status(200).json(author)
-        }
 
-    }
-))
+            const ID = req.params.id
+            const author = await Author.findByIdAndUpdate(ID, {
+                $set: {
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
+                    nationality: req.body.nationality,
+                    age: req.body.age,
+                    image: req.body.image,
+                }
+            }, { new: true })
+            if (author) {
+                res.status(200).json(author)
+            }
+        }
+    ))
 
 
 
@@ -96,21 +101,23 @@ router.put('/update/:id', asyncHandler(
  * @desc Delete a author by id
  * @route /authors/delete/:id
  * @method DELETE 
- * @access public
+ * @access private (only admin) 
  */
 
-router.delete('/delete/:id', asyncHandler(
-    async (req, res) => {
-        const ID = req.params.id
-        const author = await Author.findById(ID)
-        if (author) {
-            await Author.findByIdAndDelete(ID)
-            res.status(200).json({ message: 'deleted successfull' })
-        } else {
-            res.status(404).json({ message: 'Author not found' })
+router.delete('/delete/:id',
+    verifyTokenAndAdmin,
+    asyncHandler(
+        async (req, res) => {
+            const ID = req.params.id
+            const author = await Author.findById(ID)
+            if (author) {
+                await Author.findByIdAndDelete(ID)
+                res.status(200).json({ message: 'deleted successfull' })
+            } else {
+                res.status(404).json({ message: 'Author not found' })
+            }
         }
-    }
-))
+    ))
 
 
 

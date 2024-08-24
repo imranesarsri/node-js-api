@@ -1,13 +1,8 @@
 const express = require('express')
-const routerBooks = require('./router/books')
-const routerAuthors = require('./router/authors')
-const routerAuth = require('./router/auth')
-const routerUsers = require('./router/users')
-const connectDB = require('./db/connect')
-const dotenv = require('dotenv')
-dotenv.config()
+const connectDB = require('./config/connect')
+require('dotenv').config()
+
 const logger = require('./middlewares/logger')
-const { notFound, errorHandler } = require('./middlewares/errors')
 
 
 // Connected to database
@@ -22,23 +17,16 @@ connectDB().then(() => {
 });
 
 
-
 // Init app
 const app = express()
+
 
 // Apply Middlewres
 app.use(express.json())
 
-// app.use(logger)
-
-//? Error Handler
-// app.use(notFound)
-// app.use(errorHandler)
 
 // Routers
-app.use('/books', routerBooks)
-app.use('/authors', routerAuthors)
-app.use('/auth', routerAuth)
-app.use('/users', routerUsers)
-
-
+app.use('/books', require('./router/books'))
+app.use('/authors', require('./router/authors'))
+app.use('/auth', require('./router/auth'))
+app.use('/users', require('./router/users'))

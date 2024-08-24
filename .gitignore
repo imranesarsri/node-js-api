@@ -1,2 +1,4 @@
 desktop.ini
 folderico-azure.ico
+.env
+node_modules
