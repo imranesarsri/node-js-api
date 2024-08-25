@@ -15,6 +15,7 @@ const UserSchema = mongoose.Schema({
         type: String,
         require: true,
         trim: true,
+        unique:true,
         minlenght: 3,
         maxlight: 100,
     },
