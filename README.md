@@ -39,6 +39,9 @@ npm i jsonwebtoken
 
 ___
 
+
+## Comparison Query Operators
+- [link](https://www.mongodb.com/docs/manual/reference/operator/query-comparison/)
 ## Importing a File
 
 ### Frontend
