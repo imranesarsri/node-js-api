@@ -24,9 +24,13 @@ const app = express()
 // Apply Middlewres
 app.use(express.json())
 
+// View engine
+app.set("view engine", 'ejs')
+
 
 // Routers
 app.use('/books', require('./router/books'))
 app.use('/authors', require('./router/authors'))
 app.use('/auth', require('./router/auth'))
 app.use('/users', require('./router/users'))
+app.use('/forgotPassword', require('./router/forgotPassword'))

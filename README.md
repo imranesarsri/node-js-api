@@ -32,11 +32,15 @@ npm i dotenv
 npm i bcryptjs
 ```
 
-- npm i jsonwebtoken
+- Install jsonwebtoken
 ```bash
 npm i jsonwebtoken
 ```
 
+- Install EJS
+```bash
+npm i ejs
+```
 ___
 
 
