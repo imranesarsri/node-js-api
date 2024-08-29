@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
+const { getForgotPasswordView, sendForgetPasswordLink } = require('../controllers/forgotPasswordController')
 
-
-// router.get('/')
+router.route('/forgot-password').get(getForgotPasswordView).post(sendForgetPasswordLink)
 
 module.exports = router

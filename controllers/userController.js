@@ -8,7 +8,7 @@ const bcrypt = require('bcryptjs');
  * @desc get all user
  * @route /users
  * @method GET 
- * @access Private
+ * @access private
  */
 
 const getAllUsers = asyncHandler(
