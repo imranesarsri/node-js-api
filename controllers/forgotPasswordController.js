@@ -9,7 +9,7 @@ const asyncHandler = require('express-async-handler');
  */
 
 module.exports.getForgotPasswordView = asyncHandler((req, res) => {
-    res.render('forgotpassword')
+    res.render('forgotPassword')
 })
 
 /** 
